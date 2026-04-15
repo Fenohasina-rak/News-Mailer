@@ -26,7 +26,10 @@ jobs:
 
       - name: Run Quarkus Application
         run: |
-          ./gradlew quarkusDev -Dquarkus.args="--send-now"
+          ./gradlew build -x test
+          java -Dquarkus.main.run-and-exit=true \
+               -Dquarkus.http.host-enabled=false \
+               -jar build/quarkus-app/quarkus-run.jar
         env:
           # Your Secrets from GitHub Settings
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
