@@ -2,7 +2,10 @@ package org.dev.Services;
 
 import io.quarkus.qute.Location;
 import io.quarkus.qute.Template;
+import io.quarkus.runtime.Quarkus;
+import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import org.dev.Interfaces.MailerInterface;
@@ -34,5 +37,17 @@ public class NewsService {
         this.mailerInterface.sendEmail(RECEIVER_EMAIL, finalHtmlString);
     }
 
+    void onStart(@Observes StartupEvent ev) {
+        System.out.println("Starting Daily Digest Process...");
+
+        try {
+            sendNews("java");
+            sendNews("quarkus");
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            Quarkus.asyncExit();
+        }
+    }
 
 }
