@@ -37,17 +37,5 @@ public class NewsService {
         this.mailerInterface.sendEmail(RECEIVER_EMAIL, finalHtmlString);
     }
 
-    void onStart(@Observes StartupEvent ev) {
-        System.out.println("Starting Daily Digest Process...");
-
-        try {
-            sendNews("java");
-            sendNews("quarkus");
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            Quarkus.asyncExit();
-        }
-    }
 
 }
