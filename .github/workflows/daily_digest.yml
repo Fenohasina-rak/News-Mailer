@@ -32,15 +32,15 @@ jobs:
 
       - name: Wait for Startup
         run: |
-          echo "Waiting 35 seconds for Quarkus to initialize..."
-          sleep 35
+          echo "Waiting 120 seconds for Quarkus to initialize..."
+          sleep 120
 
       - name: Stop Quarkus Process
         if: always()
         run: |
           QUARKUS_PID=$(cat quarkus.pid)
           echo "Killing PID $QUARKUS_PID"
-          # kill -9 ensures the process stops immediately
+
           kill -9 $QUARKUS_PID || true
 
         env:
