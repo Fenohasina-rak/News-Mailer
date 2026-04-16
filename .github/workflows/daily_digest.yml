@@ -24,12 +24,25 @@ jobs:
       - name: Grant Execute Permission for Gradlew
         run: chmod +x gradlew
 
-      - name: Run Quarkus Application
+      - name: Start Quarkus Dev and Save PID
         run: |
-          ./gradlew build -x test
-          java -Dquarkus.main.run-and-exit=true \
-               -Dquarkus.http.host-enabled=false \
-               -jar build/quarkus-app/quarkus-run.jar
+          ./gradlew quarkusDev -Dquarkus.args="--send-now" & 
+          echo $! > quarkus.pid
+          echo "Quarkus started with PID: $(cat quarkus.pid)"
+
+      - name: Wait for Startup
+        run: |
+          echo "Waiting 35 seconds for Quarkus to initialize..."
+          sleep 35
+
+      - name: Stop Quarkus Process
+        if: always()
+        run: |
+          QUARKUS_PID=$(cat quarkus.pid)
+          echo "Killing PID $QUARKUS_PID"
+          # kill -9 ensures the process stops immediately
+          kill -9 $QUARKUS_PID || true
+
         env:
           # Your Secrets from GitHub Settings
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
