@@ -26,7 +26,7 @@ jobs:
 
       - name: Start Quarkus Dev and Save PID
         run: |
-          timeout -k 2s 100s ./gradlew quarkusDev -Dquarkus.args="--send-now"  || true
+          timeout -k 2s 60s ./gradlew quarkusDev -Dquarkus.args="--send-now"  || true
         env:
           # Your Secrets from GitHub Settings
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
