@@ -27,6 +27,7 @@ jobs:
       - name: Start Quarkus Dev and Save PID
         run: |
           ./gradlew quarkusDev -Dquarkus.args="--send-now" > quarkus_output.log 2>&1 &
+          disown
           echo $! > quarkus.pid
           echo "Quarkus started with PID: $(cat quarkus.pid)"
           ps aux | grep quarkus
