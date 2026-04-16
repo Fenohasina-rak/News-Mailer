@@ -26,12 +26,10 @@ jobs:
 
       - name: Start Quarkus Dev and Save PID
         run: |
-          ./gradlew quarkusDev -Dquarkus.args="--send-now" & 
+          ./gradlew quarkusDev -Dquarkus.args="--send-now" > quarkus_output.log 2>&1 &
           echo $! > quarkus.pid
           echo "Quarkus started with PID: $(cat quarkus.pid)"
-
-      - name: Wait for Startup
-        run: |
+          ps aux | grep quarkus
           echo "Waiting 120 seconds for Quarkus to initialize..."
           sleep 120
 
