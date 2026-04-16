@@ -26,22 +26,7 @@ jobs:
 
       - name: Start Quarkus Dev and Save PID
         run: |
-          ./gradlew quarkusDev -Dquarkus.args="--send-now" > quarkus_output.log 2>&1 &
-          disown
-          echo $! > quarkus.pid
-          echo "Quarkus started with PID: $(cat quarkus.pid)"
-          ps aux | grep quarkus
-          echo "Waiting 120 seconds for Quarkus to initialize..."
-          sleep 120
-
-      - name: Stop Quarkus Process
-        if: always()
-        run: |
-          QUARKUS_PID=$(cat quarkus.pid)
-          echo "Killing PID $QUARKUS_PID"
-
-          kill -9 $QUARKUS_PID || true
-
+          timeout -k 2s 100s ./gradlew quarkusDev -Dquarkus.args="--send-now"  || true
         env:
           # Your Secrets from GitHub Settings
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
