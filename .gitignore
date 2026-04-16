@@ -41,3 +41,4 @@ nb-configuration.xml
 .certs/
 
 src/main/resources/application.properties
+src/main/resources/application-dev.properties
