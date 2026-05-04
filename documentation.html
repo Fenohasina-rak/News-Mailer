@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>news-mailer — Code Documentation</title>
+    <style>
+        :root {
+            --bg-primary: #0d0f12;
+            --bg-secondary: #13171e;
+            --bg-card: #1a1f29;
+            --bg-card-hover: #1e2535;
+            --border: #2a3040;
+            --accent: #4f9cf9;
+            --accent-glow: rgba(79, 156, 249, 0.15);
+            --accent-2: #7c5cbf;
+            --accent-3: #2eb87e;
+            --accent-4: #e8634a;
+            --text-primary: #e2e8f0;
+            --text-secondary: #8892a4;
+            --text-muted: #4a5568;
+            --code-bg: #0a0c10;
+            --sidebar-width: 280px;
+            --header-height: 64px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        /* ── TOP HEADER ── */
+        .top-header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: var(--header-height);
+            background: rgba(13, 15, 18, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 32px;
+            z-index: 100;
+            gap: 20px;
+        }
+
+        .header-logo {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            opacity: 0.9;
+        }
+
+        .header-divider {
+            width: 1px;
+            height: 24px;
+            background: var(--border);
+        }
+
+        .header-project {
+            font-family: 'Georgia', serif;
+            font-size: 15px;
+            color: var(--text-primary);
+            font-weight: normal;
+        }
+
+        .header-meta {
+            margin-left: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            position: fixed;
+            top: var(--header-height);
+            left: 0;
+            bottom: 0;
+            width: var(--sidebar-width);
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            z-index: 50;
+            padding: 24px 0;
+        }
+
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-track { background: transparent; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+        .sidebar-section {
+            padding: 0 20px;
+            margin-bottom: 28px;
+        }
+
+        .sidebar-label {
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            padding-left: 4px;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13.5px;
+            transition: all 0.15s ease;
+            margin-bottom: 2px;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: var(--accent-glow);
+            color: var(--accent);
+        }
+
+        .sidebar-nav .icon {
+            font-size: 14px;
+            width: 18px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        /* ── MAIN CONTENT ── */
+        .main {
+            margin-left: var(--sidebar-width);
+            margin-top: var(--header-height);
+            padding: 48px 56px 80px;
+            max-width: 1100px;
+        }
+
+        /* ── HERO SECTION ── */
+        .hero {
+            margin-bottom: 64px;
+            padding-bottom: 48px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero-eyebrow {
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 16px;
+        }
+
+        .hero-title {
+            font-size: 48px;
+            font-weight: normal;
+            line-height: 1.15;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-title em {
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        .hero-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin-bottom: 36px;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 32px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-value {
+            font-family: 'Courier New', monospace;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        /* ── DOC SECTIONS ── */
+        .doc-section {
+            margin-bottom: 72px;
+            scroll-margin-top: calc(var(--header-height) + 24px);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .section-icon.arch { background: rgba(79, 156, 249, 0.12); }
+        .section-icon.api  { background: rgba(46, 184, 126, 0.12); }
+        .section-icon.erd  { background: rgba(124, 92, 191, 0.12); }
+        .section-icon.files { background: rgba(232, 99, 74, 0.12); }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: normal;
+            letter-spacing: -0.01em;
+        }
+
+        .section-title.arch { color: var(--accent); }
+        .section-title.api  { color: var(--accent-3); }
+        .section-title.erd  { color: var(--accent-2); }
+        .section-title.files { color: var(--accent-4); }
+
+        .section-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* ── CONTENT STYLES (applied to Gemini output) ── */
+        .doc-content h2 {
+            font-size: 20px;
+            font-weight: normal;
+            color: var(--text-primary);
+            margin: 32px 0 12px;
+            letter-spacing: -0.01em;
+        }
+
+        .doc-content h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin: 24px 0 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .doc-content p {
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            font-size: 15px;
+        }
+
+        .doc-content ul, .doc-content ol {
+            margin: 12px 0 18px 20px;
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        .doc-content li { margin-bottom: 6px; }
+
+        .doc-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0 28px;
+            font-size: 13.5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .doc-content th {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            padding: 10px 14px;
+            text-align: left;
+            border: 1px solid var(--border);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .doc-content td {
+            padding: 9px 14px;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+
+        .doc-content tr:hover td { background: var(--bg-card); }
+
+        .doc-content pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px 24px;
+            overflow-x: auto;
+            margin: 16px 0 24px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .doc-content code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+            background: rgba(79, 156, 249, 0.08);
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .doc-content pre code {
+            color: #a8c5e8;
+            background: none;
+            padding: 0;
+            font-size: 13px;
+        }
+
+        .doc-content strong { color: var(--text-primary); font-weight: 700; }
+        .doc-content em { color: var(--accent); font-style: italic; }
+
+        .doc-content hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 28px 0;
+        }
+
+        .doc-content blockquote {
+            border-left: 3px solid var(--accent);
+            padding: 10px 20px;
+            margin: 16px 0;
+            color: var(--text-secondary);
+            font-style: italic;
+            background: var(--accent-glow);
+            border-radius: 0 6px 6px 0;
+        }
+
+        /* ── FILE TREE ── */
+        .file-tree {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 24px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        .file-tree .dir {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .file-tree .file-java { color: #e8a94a; }
+        .file-tree .file-xml  { color: #7c5cbf; }
+        .file-tree .file-props { color: #2eb87e; }
+        .file-tree .file-sql  { color: #e8634a; }
+        .file-tree .file-other { color: var(--text-muted); }
+
+        .file-tree .stats-row {
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 11px;
+        }
+
+        /* ── ERROR SECTION ── */
+        .error-section {
+            background: rgba(232, 99, 74, 0.08);
+            border: 1px solid rgba(232, 99, 74, 0.3);
+            border-radius: 8px;
+            padding: 20px 24px;
+            color: var(--text-secondary);
+        }
+
+        /* ── FOOTER ── */
+        .doc-footer {
+            margin-top: 80px;
+            padding-top: 32px;
+            border-top: 1px solid var(--border);
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        /* ── SCROLLBAR ── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        /* ── ANIMATIONS ── */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .doc-section { animation: fadeIn 0.4s ease forwards; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main { margin-left: 0; padding: 24px 20px; }
+            .hero-title { font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── TOP HEADER ── -->
+<header class="top-header">
+    <span class="header-logo">⟨/⟩ DocGen</span>
+    <div class="header-divider"></div>
+    <span class="header-project">news-mailer</span>
+    <span class="header-meta">Generated mai 04, 2026 at 17:59:17</span>
+</header>
+
+<!-- ── SIDEBAR NAVIGATION ── -->
+<nav class="sidebar">
+    <div class="sidebar-section">
+        <div class="sidebar-label">Documentation</div>
+        <div class="sidebar-nav">
+            <a href="#overview"><span class="icon">◈</span> Overview</a>
+            <a href="#architecture"><span class="icon">🏗</span> Architecture</a>
+            <a href="#api"><span class="icon">🔌</span> API Specification</a>
+            <a href="#erd"><span class="icon">🗄</span> Entity Relationships</a>
+            <a href="#files"><span class="icon">📂</span> File Structure</a>
+        </div>
+    </div>
+
+    <div class="sidebar-section">
+        <div class="sidebar-label">Project Stats</div>
+        <div style="padding: 0 4px; font-size: 12px; color: var(--text-muted); line-height: 2;">
+            <div>📄 <strong style="color:var(--text-secondary)">20</strong> files</div>
+            <div>📁 <strong style="color:var(--text-secondary)">8</strong> directories</div>
+        </div>
+    </div>
+</nav>
+
+<!-- ── MAIN CONTENT ── -->
+<main class="main">
+
+    <!-- HERO -->
+    <section id="overview" class="hero">
+        <p class="hero-eyebrow">Code Documentation — Auto-Generated</p>
+        <h1 class="hero-title">
+            <em>news-mailer</em><br>Documentation
+        </h1>
+        <p class="hero-subtitle">
+            Comprehensive technical documentation automatically generated by analyzing
+            the source code with Google Gemini AI.
+        </p>
+        <div class="hero-stats">
+            <div class="stat">
+                <span class="stat-value">20</span>
+                <span class="stat-label">Source Files</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value">8</span>
+                <span class="stat-label">Directories</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value">3</span>
+                <span class="stat-label">Doc Sections</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ARCHITECTURE -->
+    <section id="architecture" class="doc-section">
+        <div class="section-header">
+            <div class="section-icon arch">🏗</div>
+            <div>
+                <h2 class="section-title arch">Architecture</h2>
+                <div class="section-desc">System design, module breakdown & design patterns</div>
+            </div>
+        </div>
+        <div class="doc-content">
+            <section>
+    <h2>1. Project Overview</h2>
+    <p>
+        The <strong>news-mailer</strong> project is a Java-based automation utility designed to aggregate news content from various external sources and distribute them via email. Built on the <strong>Quarkus</strong> framework, the application supports multiple news providers (Reddit, Algolia) and multiple delivery channels (Brevo, Gmail, Mock). It is designed to function both as a RESTful service and a standalone batch job.
+    </p>
+</section>
+
+<section>
+    <h2>2. Technology Stack</h2>
+    <table border="1" style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="background-color: #f2f2f2;">
+                <th>Category</th>
+                <th>Technology / Library</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Core Framework</strong></td>
+                <td>Quarkus (Java 17+)</td>
+            </tr>
+            <tr>
+                <td><strong>Dependency Injection</strong></td>
+                <td>Jakarta CDI (Contexts and Dependency Injection)</td>
+            </tr>
+            <tr>
+                <td><strong>REST Client</strong></td>
+                <td>MicroProfile Rest Client, Eclipse Vert.x (JSON handling)</td>
+            </tr>
+            <tr>
+                <td><strong>Templating</strong></td>
+                <td>Quarkus Qute (HTML rendering)</td>
+            </tr>
+            <tr>
+                <td><strong>API Communication</strong></td>
+                <td>Jakarta REST (JAX-RS)</td>
+            </tr>
+            <tr>
+                <td><strong>Configuration</strong></td>
+                <td>MicroProfile Config</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+<section>
+    <h2>3. Architecture Style</h2>
+    <p>
+        The project follows a <strong>Layered Architecture</strong> with strong <strong>Ports and Adapters (Hexagonal)</strong> influences. By defining interfaces for core capabilities (News fetching and Mailing), the system decouples the business logic from specific third-party API implementations.
+    </p>
+    <ul>
+        <li><strong>Decoupling:</strong> The <code>NewsService</code> interacts only with interfaces, allowing implementations to be swapped via CDI <code>@Named</code> qualifiers.</li>
+        <li><strong>Reactive & Blocking:</strong> The system utilizes both standard blocking REST clients and reactive mailers (via <code>ReactiveMailer</code>).</li>
+    </ul>
+</section>
+
+<section>
+    <h2>4. Module/Package Breakdown</h2>
+    <table border="1" style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="background-color: #f2f2f2;">
+                <th>Package</th>
+                <th>Responsibility</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>org.dev.Resources</code></td>
+                <td>REST Controllers (Entry points) for triggering news reports via HTTP.</td>
+            </tr>
+            <tr>
+                <td><code>org.dev.Services</code></td>
+                <td>Orchestration layer. <code>NewsService</code> coordinates fetching, templating, and sending.</td>
+            </tr>
+            <tr>
+                <td><code>org.dev.Interfaces</code></td>
+                <td>The "Ports". Defines the contracts for news providers and mailers.</td>
+            </tr>
+            <tr>
+                <td><code>org.dev.Implementations</code></td>
+                <td>The "Adapters". Concrete logic for Algolia, Reddit, Brevo, and Gmail.</td>
+            </tr>
+            <tr>
+                <td><code>org.dev.RestClient</code></td>
+                <td>MicroProfile Rest Client definitions for low-level HTTP communication.</td>
+            </tr>
+            <tr>
+                <td><code>org.dev.Models</code></td>
+                <td>Domain models and DTOs (Data Transfer Objects) for API request/response mapping.</td>
+            </tr>
+            <tr>
+                <td><code>org.dev.Helpers</code></td>
+                <td>Utility classes for string manipulation and sanitization.</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+<section>
+    <h2>5. Component Interaction Diagram</h2>
+    <p>The following diagram illustrates the flow of data when a news request is triggered:</p>
+    <pre style="padding: 15px; border: 1px solid #ddd;">
+[ Trigger ] 
+    | (REST Request or MainJob)
+    v
+[ NewsService ] 
+    |
+    |---&gt; [ NewsInterface (Algolia/Reddit) ] ---&gt; [ RestClient ] ---&gt; (External API)
+    |           (Fetches NewsModel List)
+    |
+    |---&gt; [ Qute Template Engine ]
+    |           (Renders HTML Content)
+    |
+    |---&gt; [ MailerInterface (Brevo/Gmail) ] ---&gt; [ SMTP / Web API ]
+    v
+[ Recipient Email ]
+    </pre>
+</section>
+
+<section>
+    <h2>6. Key Design Patterns</h2>
+    <ul>
+        <li><strong>Strategy Pattern:</strong> Used for news fetching and email delivery. Multiple implementations (e.g., <code>AlgoliaNewsImpl</code> vs <code>RedditNewsImpl</code>) can be injected dynamically.</li>
+        <li><strong>Dependency Injection (DI):</strong> Leverages Jakarta CDI to manage component lifecycles and wire dependencies.</li>
+        <li><strong>Data Transfer Object (DTO):</strong> <code>NewsModel</code> and <code>SendEmailBody</code> encapsulate data for transfer between layers and external services.</li>
+        <li><strong>Template Method:</strong> The <code>NewsService</code> uses a standard workflow (Fetch -> Render -> Send) while the specific details of fetching and sending are delegated to implementations.</li>
+    </ul>
+</section>
+
+<section>
+    <h2>7. Configuration & Infrastructure</h2>
+    <p>
+        The application is configured using <code>application.properties</code> (standard Quarkus configuration). Key infrastructure details include:
+    </p>
+    <ul>
+        <li><strong>External API Keys:</strong> Managed via MicroProfile Config (e.g., <code>${brevo.mailer.api.key}</code>).</li>
+        <li><strong>Dynamic Injection:</strong> The <code>NewsService</code> is currently hardcoded to use <code>@Named("algolianews")</code> and <code>@Named("brevomailer")</code>, which can be modified to use configuration-driven injection.</li>
+        <li><strong>Execution Modes:</strong>
+            <ul>
+                <li><strong>Server Mode:</strong> Accessible via <code>/api/sendnews/{keyword}</code>.</li>
+                <li><strong>CLI/Job Mode:</strong> <code>MainJob</code> implements <code>QuarkusApplication</code>, allowing the app to run as a short-lived task.</li>
+            </ul>
+        </li>
+    </ul>
+</section>
+        </div>
+    </section>
+
+    <!-- API SPECIFICATION -->
+    <section id="api" class="doc-section">
+        <div class="section-header">
+            <div class="section-icon api">🔌</div>
+            <div>
+                <h2 class="section-title api">API Specification</h2>
+                <div class="section-desc">Endpoints, request/response models & authentication</div>
+            </div>
+        </div>
+        <div class="doc-content">
+            <section>
+    <h2>1. API Overview</h2>
+    <p>The <code>news-mailer</code> API is a service designed to aggregate news from external sources (like Algolia or Reddit) based on specific keywords and distribute them via email using various mailer implementations (Brevo, Gmail, or Mock).</p>
+    <ul>
+        <li><strong>Base URL:</strong> <code>/api</code></li>
+        <li><strong>Authentication:</strong> Internal API. External integrations (e.g., Brevo) use API Key authentication via headers.</li>
+        <li><strong>Content Types:</strong> <code>text/plain</code>, <code>application/json</code></li>
+    </ul>
+</section>
+
+<section>
+    <h2>2. Endpoints Table</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Method</th>
+                <th>Path</th>
+                <th>Description</th>
+                <th>Request Body</th>
+                <th>Response</th>
+                <th>Status Codes</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>GET</code></td>
+                <td><code>/sendnews/{keyword}</code></td>
+                <td>Triggers the news aggregation process for a specific keyword and sends a report to the configured receiver.</td>
+                <td>None</td>
+                <td>Empty Body</td>
+                <td><code>204 No Content</code>, <code>500 Internal Server Error</code></td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+<section>
+    <h2>3. Data Models</h2>
+
+    <h3>NewsModel</h3>
+    <p>Represents a single news item retrieved from a provider.</p>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Field</th>
+                <th>Type</th>
+                <th>Required</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>title</code></td>
+                <td>String</td>
+                <td>Yes</td>
+                <td>The title of the news story.</td>
+            </tr>
+            <tr>
+                <td><code>headline</code></td>
+                <td>String</td>
+                <td>No</td>
+                <td>A brief summary or text content of the story.</td>
+            </tr>
+            <tr>
+                <td><code>imgLink</code></td>
+                <td>String</td>
+                <td>No</td>
+                <td>URL to an associated image.</td>
+            </tr>
+            <tr>
+                <td><code>url</code></td>
+                <td>String</td>
+                <td>No</td>
+                <td>Direct link to the news source.</td>
+            </tr>
+            <tr>
+                <td><code>updatedAt</code></td>
+                <td>String</td>
+                <td>No</td>
+                <td>Timestamp of the last update.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>SendEmailBody (Brevo Integration)</h3>
+    <p>The payload structure for sending emails via the Brevo REST API.</p>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Field</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>sender</code></td>
+                <td>Object (Sender)</td>
+                <td>Information about the email sender.</td>
+            </tr>
+            <tr>
+                <td><code>subject</code></td>
+                <td>String</td>
+                <td>The subject line of the email.</td>
+            </tr>
+            <tr>
+                <td><code>textContent</code></td>
+                <td>String</td>
+                <td>Plain text version of the email content.</td>
+            </tr>
+            <tr>
+                <td><code>to</code></td>
+                <td>Array (EmailUser)</td>
+                <td>List of recipients.</td>
+            </tr>
+            <tr>
+                <td><code>htmlContent</code></td>
+                <td>String</td>
+                <td>HTML formatted version of the email content.</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+<section>
+    <h2>4. Error Handling</h2>
+    <p>The API utilizes standard HTTP status codes. Errors encountered during external API calls (Algolia/Reddit/Brevo) are typically propagated as 500 errors if not caught by the underlying Quarkus framework.</p>
+    <ul>
+        <li><code>400 Bad Request</code>: Invalid path parameters (though <code>StringHelper</code> sanitizes input).</li>
+        <li><code>404 Not Found</code>: The requested endpoint does not exist.</li>
+        <li><code>500 Internal Server Error</code>: Failure in fetching news or sending email via the configured provider.</li>
+    </ul>
+</section>
+
+<section>
+    <h2>5. Security</h2>
+    <p>The application manages security primarily at the integration level:</p>
+    <ul>
+        <li><strong>Brevo API:</strong> Authenticated via the <code>api-key</code> header, sourced from the configuration property <code>brevo.mailer.api.key</code>.</li>
+        <li><strong>Internal Access:</strong> The <code>/api/sendnews/</code> endpoint currently lacks explicit JWT or Role-Based Access Control (RBAC) in the provided source code.</li>
+    </ul>
+</section>
+
+<section>
+    <h2>6. Endpoint Details</h2>
+
+    <h3>GET <code>/api/sendnews/{keyword}</code></h3>
+    <p>Sanitizes the provided keyword, fetches the latest news from the active <code>NewsInterface</code> implementation (default: Algolia), renders an HTML template, and dispatches it to the <code>MailerInterface</code> (default: Brevo).</p>
+
+    <h4>Parameters</h4>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>In</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>keyword</code></td>
+                <td>path</td>
+                <td>string</td>
+                <td>The topic to search for (e.g., "java", "quarkus").</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h4>Example Response</h4>
+    <pre><code>
+HTTP/1.1 204 No Content
+Date: Wed, 24 May 2023 12:00:00 GMT
+    </code></pre>
+
+    <h3>Internal Public API (Java)</h3>
+    <p>For developers extending the project, the following public methods are available:</p>
+    <ul>
+        <li><code>NewsService.sendNews(String keyword)</code>: Orchestrates the full fetch-and-send flow.</li>
+        <li><code>NewsInterface.getNews(String keyword)</code>: Returns a <code>List&lt;NewsModel&gt;</code>.</li>
+        <li><code>MailerInterface.sendEmail(String receiver, String content)</code>: Sends raw content to a specific address.</li>
+    </ul>
+</section>
+        </div>
+    </section>
+
+    <!-- ERD -->
+    <section id="erd" class="doc-section">
+        <div class="section-header">
+            <div class="section-icon erd">🗄</div>
+            <div>
+                <h2 class="section-title erd">Entity Relationships</h2>
+                <div class="section-desc">Data model, entities, relationships & database schema</div>
+            </div>
+        </div>
+        <div class="doc-content">
+            <div class="error-section"><p>Could not generate ERD documentation. Error: Received: 'Service Unavailable, status code 503' when invoking REST Client method: 'org.acme.Services.Gemini.GeminiClient#generateContent'</p><p>Please check your GEMINI_API_KEY and network connection.</p></div>
+        </div>
+    </section>
+
+    <!-- FILE STRUCTURE -->
+    <section id="files" class="doc-section">
+        <div class="section-header">
+            <div class="section-icon files">📂</div>
+            <div>
+                <h2 class="section-title files">File Structure</h2>
+                <div class="section-desc">All scanned source files and directories</div>
+            </div>
+        </div>
+        <div class="file-tree">
+            <pre>news-mailer/
+│
+├── src\main\java\org\dev\Helpers/
+│   ├── StringHelper.java  (229B)
+│
+├── src\main\java\org\dev\Implementations/
+│   ├── AlgoliaNewsImpl.java  (2KB)
+│   ├── BrevoMailerImpl.java  (1KB)
+│   ├── EmailImpl.java  (391B)
+│   ├── GmailEmailImpl.java  (730B)
+│   ├── RedditMockImpl.java  (428B)
+│   ├── RedditNewsImpl.java  (1KB)
+│
+├── src\main\java\org\dev\Interfaces/
+│   ├── MailerInterface.java  (131B)
+│   ├── NewsInterface.java  (183B)
+│
+├── src\main\java\org\dev\Models\Brevo/
+│   ├── EmailUser.java  (409B)
+│   ├── Params.java  (871B)
+│   ├── SendEmailBody.java  (1KB)
+│   ├── Sender.java  (405B)
+│
+├── src\main\java\org\dev\Models/
+│   ├── NewsModel.java  (960B)
+│
+├── src\main\java\org\dev\Resources/
+│   ├── ReportResources.java  (660B)
+│
+├── src\main\java\org\dev\RestClient/
+│   ├── AlgoliaNewsRestClient.java  (469B)
+│   ├── BrevoRestClient.java  (599B)
+│   ├── RedditRestClient.java  (468B)
+│
+├── src\main\java\org\dev\Services/
+│   ├── MainJob.java  (456B)
+│   ├── NewsService.java  (1KB)
+
+── 20 files, 8 directories</pre>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="doc-footer">
+        <span>Generated by <strong>DocGen</strong> — Powered by Google Gemini AI</span>
+        <span>mai 04, 2026 at 17:59:17</span>
+    </footer>
+</main>
+
+<script>
+    // Active nav highlight on scroll
+    const sections = document.querySelectorAll('.doc-section, .hero');
+    const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                navLinks.forEach(link => link.classList.remove('active'));
+                const id = entry.target.id;
+                const active = document.querySelector('.sidebar-nav a[href="#' + id + '"]');
+                if (active) active.classList.add('active');
+            }
+        });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+
+    sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
